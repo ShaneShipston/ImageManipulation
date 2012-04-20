@@ -3,6 +3,12 @@ Image Manipulation
 
 Easily Manipulate Images
 
+Requirements
+------------
+
+- PHP 5.2+
+- GD/GD2
+
 Examples
 --------
 
