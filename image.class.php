@@ -19,6 +19,7 @@ class Image {
 	 * @param string $filename Intial Image Path + Name
 	 */
 	public function __construct($filename = '') {
+		if(!function_exists('gd_info')) throw new Exception('GD2 library not available');
 		if(!empty($filename)) $this->load($filename);
 	}
 	
@@ -31,7 +32,15 @@ class Image {
 	 * @return object $this
 	 */
 	public function load($filename) {
-		$image_info = getimagesize($filename);
+		if(!file_exists($filename)) throw new Exception('Image does not exist');
+		
+		try {
+			$image_info = getimagesize($filename);
+		} catch(Exception $e) {
+			// Ignore Errors
+		}
+		
+		if(empty($image_info)) throw new Exception('File is not an image');
 		
 		$this->image_filename = $filename;
 		$this->image_type = $image_info[2];
@@ -92,14 +101,16 @@ class Image {
 	 */
 	public function save($filename = '', $image_type = '', $compression = 100) {
 		$return = false;
+		
+		if(empty($image_type)) $image_type = $this->image_type;
+		
+		// Generate File name + Save to same directory as original
 		if(empty($filename)) { 
 			$path = explode("/", $this->image_filename);
-			$ext = explode(".", $path[count($path) - 1]);
 			$path[count($path) - 1] = md5(microtime().$path[count($path) - 1]);
-			$filename = implode("/", $path).'.'.$ext[count($ext) - 1];
+			$filename = implode("/", $path).image_type_to_extension($image_type);
 			$return = true;
 		}
-		if(empty($image_type)) $image_type = $this->image_type;
 		
 		if($image_type == IMAGETYPE_JPEG) imagejpeg($this->image,$filename,$compression);
 		elseif( $image_type == IMAGETYPE_GIF ) imagegif($this->image,$filename);         
@@ -325,15 +336,15 @@ class Image {
 		
 		if(is_string($x_offset)) {
 			if($x_offset == 'left') $dest_x = 0;
-			elseif($x_offset == 'right') $dest_x = $this->getWidth() - $width;
-			elseif($x_offset == 'center') $dest_x = ($this->getWidth() - $width) / 2;
+			elseif($x_offset == 'right') $dest_x = $wide - $markW;
+			elseif($x_offset == 'center') $dest_x = ($wide - $markW) / 2;
 			else $dest_x = intval($x_offset);
 		} else $dest_x = $wide - $markW - $x_offset;
 		
 		if(is_string($y_offset)) {
 			if($y_offset == 'left') $dest_y = 0;
-			elseif($y_offset == 'right') $dest_y = $this->getHeight() - $height;
-			elseif($y_offset == 'center') $dest_y = ($this->getHeight() - $height) / 2;
+			elseif($y_offset == 'right') $dest_y = $high - $markH;
+			elseif($y_offset == 'center') $dest_y = ($high - $markH) / 2;
 			else $dest_y = intval($y_offset);
 		} else $dest_y = $high - $markH - $y_offset;
 		
