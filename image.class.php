@@ -4,8 +4,8 @@
  * 
  * @version 1.0.0
  */
-class Image {
-
+class Image 
+{
 	private $image;
 	private $image_type;
 	private $image_filename;
@@ -18,7 +18,8 @@ class Image {
 	 * 
 	 * @param string $filename Intial Image Path + Name
 	 */
-	public function __construct($filename = '') {
+	public function __construct($filename = '') 
+	{
 		if(!function_exists('gd_info')) throw new Exception('GD2 library not available');
 		if(!empty($filename)) $this->load($filename);
 	}
@@ -31,12 +32,16 @@ class Image {
 	 * @param string $filename Intial Image Path + Name
 	 * @return object $this
 	 */
-	public function load($filename) {
+	public function load($filename) 
+	{
 		if(!file_exists($filename)) throw new Exception('Image does not exist');
 		
-		try {
+		try 
+		{
 			$image_info = getimagesize($filename);
-		} catch(Exception $e) {
+		} 
+		catch(Exception $e) 
+		{
 			// Ignore Errors
 		}
 		
@@ -45,9 +50,12 @@ class Image {
 		$this->image_filename = $filename;
 		$this->image_type = $image_info[2];
 		
-		if( $this->image_type == IMAGETYPE_JPEG ) $this->image = imagecreatefromjpeg($filename);
-		elseif( $this->image_type == IMAGETYPE_GIF ) $this->image = imagecreatefromgif($filename);
-		elseif( $this->image_type == IMAGETYPE_PNG ) $this->image = imagecreatefrompng($filename);
+		if( $this->image_type == IMAGETYPE_JPEG ) 
+			$this->image = imagecreatefromjpeg($filename);
+		elseif( $this->image_type == IMAGETYPE_GIF ) 
+			$this->image = imagecreatefromgif($filename);
+		elseif( $this->image_type == IMAGETYPE_PNG ) 
+			$this->image = imagecreatefrompng($filename);
 		
 		return $this;
 	}
@@ -61,16 +69,22 @@ class Image {
 	 * @param boolean $header Output header information
 	 * @return object $this
 	 */
-	public function output($image_type = '', $header = true) {
+	public function output($image_type = '', $header = true) 
+	{
 		if(empty($image_type)) $image_type = $this->image_type;
 		
-		if($image_type == IMAGETYPE_JPEG) {
+		if($image_type == IMAGETYPE_JPEG) 
+		{
 			if($header) header('Content-Type: image/jpeg');
 			imagejpeg($this->image);
-		} elseif( $image_type == IMAGETYPE_GIF ) {
+		} 
+		elseif( $image_type == IMAGETYPE_GIF ) 
+		{
 			if($header) header('Content-Type: image/gif');
 			imagegif($this->image);         
-		}elseif( $image_type == IMAGETYPE_PNG ) {
+		}
+		elseif( $image_type == IMAGETYPE_PNG ) 
+		{
 			if($header) header('Content-Type: image/png');
 			imagepng($this->image);
 		}
@@ -85,7 +99,8 @@ class Image {
 	 * 
 	 * @return string Raw image code
 	 */
-	public function raw() {
+	public function raw() 
+	{
 		return $this->image;
 	}
 	
@@ -99,25 +114,32 @@ class Image {
 	 * @param integer $compression - Image Quality
 	 * @return object|string $this | New Image Name
 	 */
-	public function save($filename = '', $image_type = '', $compression = 100) {
+	public function save($filename = '', $image_type = '', $compression = 90) 
+	{
 		$return = false;
 		
 		if(empty($image_type)) $image_type = $this->image_type;
 		
 		// Generate File name + Save to same directory as original
-		if(empty($filename)) { 
+		if(empty($filename)) 
+		{ 
 			$path = explode("/", $this->image_filename);
 			$path[count($path) - 1] = md5(microtime().$path[count($path) - 1]);
 			$filename = implode("/", $path).image_type_to_extension($image_type);
 			$return = true;
 		}
 		
-		if($image_type == IMAGETYPE_JPEG) imagejpeg($this->image,$filename,$compression);
-		elseif( $image_type == IMAGETYPE_GIF ) imagegif($this->image,$filename);         
-		elseif( $image_type == IMAGETYPE_PNG ) imagepng($this->image,$filename);
+		if($image_type == IMAGETYPE_JPEG) 
+			imagejpeg($this->image,$filename,$compression);
+		elseif( $image_type == IMAGETYPE_GIF ) 
+			imagegif($this->image,$filename);         
+		elseif( $image_type == IMAGETYPE_PNG ) 
+			imagepng($this->image,$filename);
 		
-		if($return) return $filename; 
-		else return $this;
+		if($return) 
+			return $filename; 
+		
+		return $this;
 	}
 	
 	/**
@@ -127,7 +149,8 @@ class Image {
 	 * 
 	 * @return integer Image Width
 	 */
-	public function getWidth() {
+	public function getWidth() 
+	{
 		return imagesx($this->image);
 	}
 	
@@ -138,7 +161,8 @@ class Image {
 	 * 
 	 * @return integer Image Height
 	 */
-	public function getHeight() {
+	public function getHeight() 
+	{
 		return imagesy($this->image);
 	}
 	
@@ -151,11 +175,13 @@ class Image {
 	 * @param boolean $expand Allow Image to be Resized Larger than Input Image
 	 * @return object $this
 	 */
-	public function resizeToHeight($height, $expand = false) {
-		if($this->getHeight() > $height || $expand) {
+	public function resizeToHeight($height, $expand = false) 
+	{
+		if($this->getHeight() > $height || $expand) 
+		{
 			$ratio = $height / $this->getHeight();
 			$width = round($this->getWidth() * $ratio);
-			$this->resize($width,$height);
+			$this->resize($width, $height);
 		}
 		
 		return $this;
@@ -170,11 +196,13 @@ class Image {
 	 * @param boolean $expand Allow Image to be Resized Larger than Input Image
 	 * @return object $this
 	 */
-	public function resizeToWidth($width, $expand = false) {
-		if($this->getWidth() > $width || $expand) {
+	public function resizeToWidth($width, $expand = false) 
+	{
+		if($this->getWidth() > $width || $expand) 
+		{
 			$ratio = $width / $this->getWidth();
 			$height = round($this->getHeight() * $ratio);
-			$this->resize($width,$height);
+			$this->resize($width, $height);
 		}
 		
 		return $this;
@@ -188,7 +216,8 @@ class Image {
 	 * @param integer $scale Percentage of Input Size
 	 * @return object $this
 	 */
-	public function scale($scale) {
+	public function scale($scale) 
+	{
 		$width = $this->getWidth() * $scale / 100;
 		$height = $this->getheight() * $scale / 100; 
 		$this->resize($width, $height);
@@ -203,15 +232,19 @@ class Image {
 	 * 
 	 * @param integer $width New Image Width
 	 * @param integer $height New Image Height
-	 * @param boolean $smart Maintain Aspect Ratio
+	 * @param boolean $maintain Maintain Aspect Ratio
 	 * @return object $this
 	 */
-	public function resize($width, $height, $smart = false) {
+	public function resize($width, $height, $maintain = false) 
+	{
 		$new_image = imagecreatetruecolor($width, $height);
 		
-		if($smart) {
-			if($this->getWidth() > $this->getHeight()) $this->resizeToWidth($width);
-			else $this->resizeToHeight($height);
+		if($maintain) 
+		{
+			if($width / $this->getWidth() * $this->getHeight() > $height) 
+				$this->resizeToWidth($width);
+			else 
+				$this->resizeToHeight($height);
 			
 			return $this;
 		}
@@ -235,23 +268,33 @@ class Image {
 	 * @param integer|string $y_offset Y Axis Offset
 	 * @return object $this
 	 */
-	public function crop($width, $height, $x_offset = 0, $y_offset = 0) {
+	public function crop($width, $height, $x_offset = 0, $y_offset = 0) 
+	{
 		$new_image = imagecreatetruecolor($width, $height);
-		
 		$new_image = $this->alpha_blend($new_image);
 		
-		if(is_string($x_offset)) {
-			if($x_offset == 'left') $x_offset = 0;
-			elseif($x_offset == 'right') $x_offset = $this->getWidth() - $width;
-			elseif($x_offset == 'center') $x_offset = ($this->getWidth() - $width) / 2;
-			else $x_offset = intval($x_offset);
+		if(is_string($x_offset)) 
+		{
+			if($x_offset == 'left') 
+				$x_offset = 0;
+			elseif($x_offset == 'right') 
+				$x_offset = $this->getWidth() - $width;
+			elseif($x_offset == 'center') 
+				$x_offset = ($this->getWidth() - $width) / 2;
+			else 
+				$x_offset = intval($x_offset);
 		}
 		
-		if(is_string($y_offset)) {
-			if($y_offset == 'top') $y_offset = 0;
-			elseif($y_offset == 'bottom') $y_offset = $this->getHeight() - $height;
-			elseif($y_offset == 'center') $y_offset = ($this->getHeight() - $height) / 2;
-			else $y_offset = intval($y_offset);
+		if(is_string($y_offset)) 
+		{
+			if($y_offset == 'top') 
+				$y_offset = 0;
+			elseif($y_offset == 'bottom') 
+				$y_offset = $this->getHeight() - $height;
+			elseif($y_offset == 'center') 
+				$y_offset = ($this->getHeight() - $height) / 2;
+			else 
+				$y_offset = intval($y_offset);
 		}
 		
 		imagecopyresampled($new_image, $this->image, 0, 0, $x_offset, $y_offset, $width, $height, $width, $height);
@@ -267,7 +310,8 @@ class Image {
 	 * 
 	 * @return object $this
 	 */
-	public function destroy() {
+	public function destroy() 
+	{
 		imagedestroy($this->image);
 		
 		return $this;
@@ -278,8 +322,10 @@ class Image {
 	 *
 	 * @since 1.0.0
 	 */
-	public function alpha_blend($new_image) {
-		if($this->image_type == IMAGETYPE_GIF || $this->image_type == IMAGETYPE_PNG){
+	public function alpha_blend($new_image) 
+	{
+		if($this->image_type == IMAGETYPE_GIF || $this->image_type == IMAGETYPE_PNG)
+		{
 			imagecolortransparent($this->image, imagecolorallocatealpha($new_image, 0, 0, 0, 127));
 			imagealphablending($new_image, false);
 			imagesavealpha($new_image, true);
@@ -297,7 +343,8 @@ class Image {
 	 * @param integer $bg Background color
 	 * @return object $this
 	 */
-	public function rotate($angle, $bg = 0) {
+	public function rotate($angle, $bg = 0) 
+	{
 		$this->image = imagerotate($this->image, $angle, $bg);
 		
 		return $this;
@@ -316,12 +363,16 @@ class Image {
 	 * @param integer $height New Watermark Height
 	 * @return object $this
 	 */
-	public function watermark($img, $x_offset = 0, $y_offset = 0, $opacity = 70, $width = 0, $height = 0) {
+	public function watermark($img, $x_offset = 0, $y_offset = 0, $opacity = 70, $width = 0, $height = 0) 
+	{
 		$watermark = new Image($img);
 		
-		if(!empty($width) && !empty($height)) $watermark->resize($width, $height);
-		elseif(!empty($width)) $watermark->resizeToWidth($width);
-		elseif(!empty($height)) $watermark->resizeToHeight($height);
+		if(!empty($width) && !empty($height)) 
+			$watermark->resize($width, $height);
+		elseif(!empty($width)) 
+			$watermark->resizeToWidth($width);
+		elseif(!empty($height)) 
+			$watermark->resizeToHeight($height);
 		
 		$mark = $watermark->opacity($opacity)->raw();
 		
@@ -331,22 +382,39 @@ class Image {
 		$high = $this->getHeight();
 		
 		$new_image = imagecreatetruecolor($wide, $high);
-		
 		$new_image = $this->alpha_blend($new_image);
 		
-		if(is_string($x_offset)) {
-			if($x_offset == 'left') $dest_x = 0;
-			elseif($x_offset == 'right') $dest_x = $wide - $markW;
-			elseif($x_offset == 'center') $dest_x = ($wide - $markW) / 2;
-			else $dest_x = intval($x_offset);
-		} else $dest_x = $wide - $markW - $x_offset;
+		if(is_string($x_offset)) 
+		{
+			if($x_offset == 'left') 
+				$dest_x = 0;
+			elseif($x_offset == 'right') 
+				$dest_x = $wide - $markW;
+			elseif($x_offset == 'center') 
+				$dest_x = ($wide - $markW) / 2;
+			else 
+				$dest_x = intval($x_offset);
+		} 
+		else
+		{
+			$dest_x = $wide - $markW - $x_offset;
+		}
 		
-		if(is_string($y_offset)) {
-			if($y_offset == 'left') $dest_y = 0;
-			elseif($y_offset == 'right') $dest_y = $high - $markH;
-			elseif($y_offset == 'center') $dest_y = ($high - $markH) / 2;
-			else $dest_y = intval($y_offset);
-		} else $dest_y = $high - $markH - $y_offset;
+		if(is_string($y_offset)) 
+		{
+			if($y_offset == 'left') 
+				$dest_y = 0;
+			elseif($y_offset == 'right') 
+				$dest_y = $high - $markH;
+			elseif($y_offset == 'center') 
+				$dest_y = ($high - $markH) / 2;
+			else 
+				$dest_y = intval($y_offset);
+		} 
+		else 
+		{
+			$dest_y = $high - $markH - $y_offset;
+		}
 		
 		imagecopyresampled($new_image, $this->image, 0, 0, 0, 0, $wide, $high, $wide, $high);
 		imagecopy($new_image, $mark, $dest_x, $dest_y, 0, 0, $markW, $markH);
@@ -367,11 +435,13 @@ class Image {
 	 * @param integer $strength Starting Transparency (0 - 127, 0 being opaque)
 	 * @return object $this
 	 */
-	public function reflection($height, $gap = 0, $strength = 120) {
+	public function reflection($height, $gap = 0, $strength = 120) 
+	{
 		$new_height = $this->getHeight() + $height + $gap;
 		
 		$output = imagecreatetruecolor($this->getWidth(), $new_height);
 		imagealphablending($output, false);
+		
 		$bg = imagecolortransparent($output, imagecolorallocatealpha($output, 255, 255, 255, 127));
 		imagefill($output, 0, 0, $bg);
 		imagefilledrectangle($output, 0, 0, $this->getWidth(), $this->getHeight(), $bg1);
@@ -379,10 +449,12 @@ class Image {
 		
 		$reflection_section = imagecreatetruecolor($this->getWidth(), 1);
 		imagealphablending($reflection_section, false);
+		
 		$bg1 = imagecolortransparent($reflection_section, imagecolorallocatealpha($reflection_section, 255, 255, 255, 127));
 		imagefill($reflection_section, 0, 0, $bg1);
 		
-		for ($y = 0; $y < $height; $y++) {
+		for ($y = 0; $y < $height; $y++) 
+		{
 			$t = ((127 - $strength) + ($strength * ($y / $height)));
 			imagecopy($reflection_section, $output, 0, 0, 0, $this->getHeight()  - $y, $this->getWidth(), 1);
 			imagefilter($reflection_section, IMG_FILTER_COLORIZE, 0, 0, 0, $t);
@@ -405,7 +477,8 @@ class Image {
 	 * @param string $opacity Percentage of original opacity
 	 * @return object $this
 	 */
-	public function opacity($opacity) {
+	public function opacity($opacity) 
+	{
 		$new_image = imagecreatetruecolor($this->getWidth(), $this->getHeight());
 		
 		$black = imagecolorallocate($new_image, 0, 0, 0);
